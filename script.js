@@ -1,7 +1,7 @@
 let operand1, operand2, operator;
 
 function add(a,b) {
-    return Number(a) + Number(b);
+    return a+b;
 }
 
 function subtract(a,b) {
@@ -18,13 +18,13 @@ function divide(a,b) {
 
 function operate(operand1,operand2,operator) {
     switch(operator) {
-        case '+':
+        case 'add':
             return add(operand1,operand2);
-        case '-':
+        case 'subtract':
             return subtract(operand1,operand2);
-        case '*':
+        case 'multiply':
             return multiply(operand1,operand2);
-        case '/':
+        case 'divide':
             return divide(operand1,operand2);
 
     };
