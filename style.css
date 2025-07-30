@@ -66,6 +66,10 @@ body {
     color: white;
 }
 
+.buttons .operator.active {
+    background-color: #D03F6C;
+}
+
 .buttons .clear {
     background-color: #E91E63;
     color: white;
