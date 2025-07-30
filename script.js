@@ -56,7 +56,6 @@ buttons.addEventListener('click',function(event) {
         }
         if(event.target.id === 'equals') {
             removeActiveOperator();
-            waitingSecondOperand = false;
             if(displayValue && firstOperand && operator) {
                 tempOperand = displayValue;
                 printResult(firstOperand,displayValue);                
