@@ -56,6 +56,7 @@ buttons.addEventListener('click',function(event) {
         }
         if(event.target.id === 'equals') {
             removeActiveOperator();
+            waitingSecondOperand = false;
             if(displayValue && firstOperand && operator) {
                 tempOperand = displayValue;
                 printResult(firstOperand,displayValue);                
@@ -73,18 +74,18 @@ buttons.addEventListener('click',function(event) {
             }
         }
         if(event.target.classList.contains('operator') && event.target.id !== 'percentage') {
-            operator = event.target.id;
             removeActiveOperator();
             event.target.classList.add('active');
             if(firstOperand === null) {
                 firstOperand = displayValue;
                 displayValue = null;
                 display.value = '';
+                operator = event.target.id;
                 waitingSecondOperand = true;
             }
             else if(waitingSecondOperand) {
                 printResult(firstOperand,displayValue);
-                waitingSecondOperand = false;
+                operator = event.target.id;
             }
         }
         if(event.target.classList.contains('digit') || event.target.id === 'decimal') {
