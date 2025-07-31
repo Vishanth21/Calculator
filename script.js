@@ -1,3 +1,5 @@
+window.addEventListener('DOMContentLoaded',clearAll);
+
 const calculator = {
     firstOperand: null,
     displayValue: null,
@@ -37,75 +39,25 @@ const calculator = {
 const display = document.querySelector('.display');
 const buttons = document.querySelector('.buttons');
 
-function removeActiveOperator() {
-    const activeOperator = document.querySelector('.operator.active');
-    if(activeOperator)
-        activeOperator.classList.remove('active');
-}
-
-window.addEventListener('DOMContentLoaded',clearAll);
-
 buttons.addEventListener('click',function(event) {
     if(event.target.classList.contains('button')) {
-        console.log(event.target.id);
         if(event.target.id === 'AC') {
             clearAll();
         }
         if(event.target.id === 'CE' && display.value) {
-            if(calculator.displayValue)
-                calculator.displayValue = calculator.displayValue.slice(0,calculator.displayValue.length - 1);
-            display.value = calculator.displayValue;
+            clearEntry();
         }
         if(event.target.id === 'equals') {
-            removeActiveOperator();
-            if(calculator.displayValue && calculator.firstOperand && calculator.operator) {
-                calculator.tempOperand = calculator.displayValue;
-                printResult(calculator.firstOperand,calculator.displayValue);                
-            }
-            else if(calculator.displayValue === null && calculator.firstOperand && calculator.operator) {
-                if(!calculator.tempOperand)
-                    calculator.tempOperand = calculator.firstOperand;
-                printResult(calculator.firstOperand,calculator.tempOperand);
-            }
+            handleResult();
         }
         if(event.target.id === 'percentage') {
-            if(calculator.displayValue) {
-                calculator.displayValue = (Number(calculator.displayValue)/100).toString();
-                display.value = calculator.displayValue;
-            }
+            handlePercentage();
         }
         if(event.target.classList.contains('operator') && event.target.id !== 'percentage') {
-            removeActiveOperator();
-            event.target.classList.add('active');
-            if(calculator.firstOperand === null) {
-                calculator.firstOperand = calculator.displayValue;
-                calculator.displayValue = null;
-                display.value = '';
-                calculator.operator = event.target.id;
-                calculator.waitingSecondOperand = true;
-            }
-            else if(calculator.waitingSecondOperand) {
-                printResult(calculator.firstOperand,calculator.displayValue);
-                calculator.operator = event.target.id;
-            }
+            handleOperator(event.target);
         }
         if(event.target.classList.contains('digit') || event.target.id === 'decimal') {
-            if(event.target.id === 'decimal') {
-                if(!calculator.displayValue) {
-                    calculator.displayValue = '0.';
-                    display.value = calculator.displayValue;
-                }
-                else if(!calculator.displayValue.includes('.')) {
-                    calculator.displayValue += '.';
-                    display.value = calculator.displayValue;
-                }
-            }
-            else {
-                if(!calculator.displayValue)
-                    calculator.displayValue = '';
-                calculator.displayValue += event.target.id;
-                display.value = calculator.displayValue;
-            }
+            handleDigit(event.target.id);
         }
     }    
 })
@@ -131,4 +83,72 @@ function clearAll() {
     calculator.waitingSecondOperand = false;
     display.value = '';
     removeActiveOperator();
+}
+
+function handleDigit(key) {
+    if(key === 'decimal') {
+        if(!calculator.displayValue) {
+            calculator.displayValue = '0.';
+            display.value = calculator.displayValue;
+        }
+        else if(!calculator.displayValue.includes('.')) {
+            calculator.displayValue += '.';
+            display.value = calculator.displayValue;
+        }
+    }
+    else {
+        if(!calculator.displayValue)
+            calculator.displayValue = '';
+        calculator.displayValue += key;
+        display.value = calculator.displayValue;
+    }
+}
+
+function handleOperator(operatorObject) {
+    removeActiveOperator();
+    operatorObject.classList.add('active');
+    if(calculator.firstOperand === null) {
+        calculator.firstOperand = calculator.displayValue;
+        calculator.displayValue = null;
+        display.value = '';
+        calculator.operator = operatorObject.id;
+        calculator.waitingSecondOperand = true;
+    }
+    else if(calculator.waitingSecondOperand) {
+        printResult(calculator.firstOperand,calculator.displayValue);
+        calculator.operator = operatorObject.id;
+    }
+}
+
+function handleResult() {
+    removeActiveOperator();
+    if(calculator.displayValue && calculator.firstOperand && calculator.operator) {
+        calculator.tempOperand = calculator.displayValue;
+        printResult(calculator.firstOperand,calculator.displayValue);                
+    }
+    else if(calculator.displayValue === null && calculator.firstOperand && calculator.operator) {
+        if(!calculator.tempOperand)
+            calculator.tempOperand = calculator.firstOperand;
+        printResult(calculator.firstOperand,calculator.tempOperand);
+    }
+    calculator.waitingSecondOperand = false;
+}
+
+function handlePercentage() {
+    if(calculator.displayValue) {
+        calculator.displayValue = (Number(calculator.displayValue)/100).toString();
+        display.value = calculator.displayValue;
+    }
+}
+
+function clearEntry() {
+    if(calculator.displayValue)
+        calculator.displayValue = calculator.displayValue.slice(0,calculator.displayValue.length - 1);
+    display.value = calculator.displayValue;
+}
+
+function removeActiveOperator() {
+    const activeOperator = document.querySelector('.operator.active');
+    if(activeOperator)
+        activeOperator.classList.remove('active');
 }
