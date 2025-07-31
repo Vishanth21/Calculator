@@ -1,4 +1,16 @@
-window.addEventListener('DOMContentLoaded',clearAll);
+const VALID_OPERATORS = {
+    '+': 'add',
+    '-': 'subtract',
+    '*': 'multiply',
+    '/': 'divide',
+};
+window.addEventListener('DOMContentLoaded',() => {
+    clearAll();
+    if(!window.sessionStorage.getItem('hasSeenAlert')) {
+        alert('Works with keyboard btw:\n1. Clear All (AC): Escape,Delete.\n2. Clear Entry (CE): Backspace.\n3. Equals (=): Enter.\n4. Operators and digits: Respective keys.');
+        window.sessionStorage.setItem('hasSeenAlert',true);
+    }
+});
 
 const calculator = {
     firstOperand: null,
@@ -39,7 +51,7 @@ const calculator = {
 const display = document.querySelector('.display');
 const buttons = document.querySelector('.buttons');
 
-buttons.addEventListener('click',function(event) {
+buttons.addEventListener('click', function(event) {
     if(event.target.classList.contains('button')) {
         if(event.target.id === 'AC') {
             clearAll();
@@ -60,6 +72,29 @@ buttons.addEventListener('click',function(event) {
             handleDigit(event.target.id);
         }
     }    
+})
+
+window.addEventListener('keydown', function(event) {
+    if(event.key === 'Escape' || event.key === 'Delete') {
+        clearAll();
+    }
+    if(event.key === 'Backspace' && display.value) {
+        clearEntry();
+    }
+    if(event.key === 'Enter') {
+        handleResult();
+    }
+    if(event.key === '%') {
+        handlePercentage();
+    }
+    if(event.key in VALID_OPERATORS) {
+        const operatorObject = document.querySelector(`#${VALID_OPERATORS[event.key]}`);
+        handleOperator(operatorObject);
+    }
+    if(!isNaN(Number(event.key)) || event.key === '.') {
+        const key = event.key === '.' ? 'decimal' : event.key;
+        handleDigit(key);
+    }
 })
 
 function printResult(first,second) {
@@ -89,7 +124,6 @@ function handleDigit(key) {
     if(!calculator.waitingSecondOperand) {
         calculator.firstOperand = null;
         calculator.operator = null;
-        display.value = null;
     }
     calculator.waitingSecondOperand = true;
     if(key === 'decimal') {
