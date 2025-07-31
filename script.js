@@ -86,30 +86,39 @@ function clearAll() {
 }
 
 function handleDigit(key) {
+    if(!calculator.waitingSecondOperand) {
+        calculator.firstOperand = null;
+        calculator.operator = null;
+        display.value = null;
+    }
+    calculator.waitingSecondOperand = true;
     if(key === 'decimal') {
         if(!calculator.displayValue) {
             calculator.displayValue = '0.';
-            display.value = calculator.displayValue;
         }
         else if(!calculator.displayValue.includes('.')) {
             calculator.displayValue += '.';
-            display.value = calculator.displayValue;
         }
     }
     else {
         if(!calculator.displayValue)
             calculator.displayValue = '';
         calculator.displayValue += key;
-        display.value = calculator.displayValue;
     }
+    display.value = calculator.displayValue;
 }
 
 function handleOperator(operatorObject) {
-    removeActiveOperator();
-    operatorObject.classList.add('active');
+    if(calculator.displayValue === null && calculator.waitingSecondOperand === false) {
+        calculator.operator = operatorObject.id;
+        calculator.waitingSecondOperand = true;
+        display.value = null;
+        removeActiveOperator();
+        operatorObject.classList.add('active');
+        return;
+    }
     if(calculator.firstOperand === null) {
         calculator.firstOperand = calculator.displayValue;
-        calculator.displayValue = null;
         display.value = '';
         calculator.operator = operatorObject.id;
         calculator.waitingSecondOperand = true;
@@ -118,6 +127,9 @@ function handleOperator(operatorObject) {
         printResult(calculator.firstOperand,calculator.displayValue);
         calculator.operator = operatorObject.id;
     }
+    calculator.displayValue = null;
+    removeActiveOperator();
+    operatorObject.classList.add('active');
 }
 
 function handleResult() {
